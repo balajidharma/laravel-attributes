@@ -22,7 +22,7 @@ class CreateAttributesTables extends Migration
             $table->text('value')->nullable();
             $table->morphs('attributable');
             $table->timestamps();
-            $table->unique(['name', 'data_type', 'attributable_type', 'attributable_id'], 'attributes_unique');
+            $table->unique(['name', 'attributable_type', 'attributable_id'], 'attributes_unique');
         });
     }
 };
