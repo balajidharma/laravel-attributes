@@ -3,114 +3,95 @@
 namespace BalajiDharma\LaravelAttributes\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Collection;
 
 trait HasAttributable
 {
-    use HasRelationships;
-
     /**
-     * Get attributes.
-     *
-     * @return MorphMany
+     * Get attributes relationship.
      */
-    public function attributes()
+    public function attributes(): MorphMany
     {
         return $this->morphMany(
             config('attributes.models.attributes'),
-            'attributable',
             'attributable'
         );
     }
 
     /**
-     * Attach attribute.
-     *
-     * @return Builder|Model
+     * Attach a single attribute.
      */
-    public function attachAttribute(string $name, string $value, ?string $data_type = 'string', ?int $weight = 0) 
-    {
-        $attributes = [
+    public function attachAttribute(
+        string $name, 
+        string $value, 
+        ?string $data_type = 'string', 
+        ?int $weight = 0
+    ): Model {
+        return $this->attributes()->create([
             'data_type' => $data_type,
-            'name'  => $name,
+            'name' => $name,
             'value' => $value,
             'attributable_id' => $this->getKey(),
-            'attributable'  => $this->getMorphClass(),
+            'attributable' => $this->getMorphClass(),
             'weight' => $weight,
-        ];
-
-        return $this->attributes()->create($attributes);
+        ]);
     }
 
     /**
      * Attach multiple attributes.
-     *
-     * @return $this
      */
-    public function attachAttributes(array $values)
+    public function attachAttributes(array $values): self
     {
-        $weight = 1;
-        foreach ($values as $value) {
-            $value['attributable_id'] = $this->getKey();
-            $value['attributable'] = $this->getMorphClass();
-            $value['weight'] = $value['weight'] ?? $weight;
-            $this->attributes()->create($value);
-            $weight++;
-        }
+        $attributes = collect($values)->map(function ($value, $index) {
+            return array_merge($value, [
+                'attributable_id' => $this->getKey(),
+                'attributable' => $this->getMorphClass(),
+                'weight' => $value['weight'] ?? $index + 1,
+            ]);
+        })->all();
+
+        $this->attributes()->createMany($attributes);
 
         return $this;
     }
 
     /**
-     * Check attribute have special value.
-     *
-     * @return bool
+     * Check if attribute has specific value.
      */
-    public function hasAttributeValue(string $value)
+    public function hasAttributeValue(string $value): bool
     {
-        return $this->getAttributeWhere()
+        return $this->getAttributeQuery()
             ->where('value', $value)
             ->exists();
     }
 
     /**
-     * Check attribute have special name.
-     *
-     * @return bool
+     * Check if attribute has specific name.
      */
-    public function hasAttributeName(string $name)
+    public function hasAttributeName(string $name): bool
     {
-        return $this->getAttributeWhere()
+        return $this->getAttributeQuery()
             ->where('name', $name)
             ->exists();
     }
 
     /**
      * Delete all attributes.
-     *
-     * @return Attributable
      */
-    public function deleteAllAttribute()
+    public function deleteAllAttributes(): self
     {
-        $attributes = $this->getAttributeWhere()->get();
-
-        foreach ($attributes as $attribute) {
-            $attribute->delete();
-        }
-
+        $this->getAttributeQuery()->delete();
         return $this;
     }
 
     /**
-     * Delete special attribute.
-     *
-     * @return int
+     * Delete attribute by name and value.
      */
-    public function deleteAttribute(string $name, string $value)
+    public function deleteAttribute(string $name, string $value): int
     {
-        return $this->getAttributeWhere()
+        return $this->getAttributeQuery()
             ->where('name', $name)
             ->where('value', $value)
             ->delete();
@@ -118,32 +99,28 @@ trait HasAttributable
 
     /**
      * Delete attribute by name.
-     *
-     * @return int
      */
-    public function deleteAttributeByName(string $name)
+    public function deleteAttributeByName(string $name): int
     {
-        return $this->getAttributeWhere()
+        return $this->getAttributeQuery()
             ->where('name', $name)
             ->delete();
     }
 
     /**
      * Delete attribute by value.
-     *
-     * @return int
      */
-    public function deleteAttributeByValue(string $value)
+    public function deleteAttributeByValue(string $value): int
     {
-        return $this->getAttributeWhere()
+        return $this->getAttributeQuery()
             ->where('value', $value)
             ->delete();
     }
 
     /**
-     * Get attribute with this (model).
+     * Get base attribute query.
      */
-    private function getAttributeWhere(): MorphMany
+    private function getAttributeQuery(): MorphMany
     {
         return $this->attributes()
             ->where('attributable_id', $this->getKey())
