@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-trait Attributable
+trait HasAttributable
 {
     use HasRelationships;
 
