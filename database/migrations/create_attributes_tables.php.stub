@@ -21,6 +21,7 @@ class CreateAttributesTables extends Migration
             $table->string('name');
             $table->text('value')->nullable();
             $table->morphs('attributable');
+            $table->integer('weight')->default(0);
             $table->timestamps();
             $table->unique(['name', 'attributable_type', 'attributable_id'], 'attributes_unique');
         });
