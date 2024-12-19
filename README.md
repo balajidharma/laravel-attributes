@@ -1,5 +1,5 @@
 <h1 align="center">Laravel Attributes</h1>
-<h3 align="center">Track Page views for your Laravel projects.</h3>
+<h3 align="center">Add custom attribute to you Laravel model.</h3>
 <p align="center">
 <a href="https://packagist.org/packages/balajidharma/laravel-attributes"><img src="https://poser.pugx.org/balajidharma/laravel-attributes/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/balajidharma/laravel-attributes"><img src="https://poser.pugx.org/balajidharma/laravel-attributes/v/stable" alt="Latest Stable Version"></a>
@@ -10,15 +10,15 @@
 This package builds upon the work done in [milwad-dev/laravel-attributes](https://github.com/milwad-dev/laravel-attributes) and has been modified to suit specific needs. We are grateful to the original author and contributors for their work.
 
 ## Features
-- Track page views for Laravel Eloquent models
-- Configure unique views by IP, session, and authenticated users
-- Bot detection and filtering
-- Support for DNT (Do Not Track) header
-- Configurable view counting and storage
+- Save attribute with data type
+- Attribute with sort orders
+- Attribute casting
 
 ## Table of Contents
 
 - [Installation](#installation)
+- [Save Attrubute](#save-attribute)
+- [Get Attributes]($get-attributes)
 - [Configuration](#configuration-options)
 - [Demo](#demo)
 
@@ -57,14 +57,122 @@ class Thread extends Model
     use HasAttributes;
 	
 ```
+## Save attribute
 
-- Recording views
-To make a view record, you can call the record method.
+- Save single attibute
+
 ```php
-public function show(Thread $thread)
-{
-    $thread->record();
-    
+$thread->save();
+
+$thread->attachAttribute('color', 'red');
+
+```
+
+- Save single attibute with data type
+```php
+
+$thread->attachAttribute('color', 'red', 'string');
+
+$thread->attachAttribute('price', '10', 'integer');
+
+$thread->attachAttribute('is_active', '1', 'boolean');
+
+```
+default data type is `string`
+
+- Save single attibute with weight
+
+The weight used to sort the attributes
+
+```php
+
+$thread->attachAttribute('color', 'red', 'string', 1);
+
+$thread->attachAttribute('price', '10', 'integer', 2);
+
+$thread->attachAttribute('is_active', '1', 'boolean', 3);
+
+```
+default weight value is `0`
+
+
+- Save multiple attibute
+
+```php
+$data = [
+    [
+        'name' => 'color',
+        'value' => 'red',
+        'data_type' => 'string'
+    ],
+    [
+        'name' => 'price',
+        'value' => '10',
+        'data_type' => 'interger'
+    ],
+    [
+        'name' => 'is_active',
+        'value' => '1',
+        'data_type' => 'boolean'
+    ],
+]
+
+$thread->attachAttributes($data);
+
+```
+`weight` will be added based on array index
+
+## Get Attributes
+
+- Get attributes with query
+```php
+$thread = Thread::query()->with('attributes')->get();
+
+$thread->attributes;
+```
+
+- Check attribute value is exists
+
+```php
+if ($thread->hasAttributeValue('red')) {
+    return 'attribute value';
+}
+
+return 'no attribute value';
+```
+
+- Check attribute name is exists
+
+```php
+if ($thread->hasAttributName('color')) {
+    return 'attribute name';
+}
+
+return 'no attribute name';
+```
+
+- Delete all attributes
+
+```php
+$thread->deleteAllAttribute();
+```
+
+- Delete attribute by name and value
+
+```php
+$thread->deleteAttribute('color', 'red');
+```
+
+- Delete attribute by name
+
+```php
+$thread->deleteAttributeByName('color');
+```
+
+- Delete attribute by value
+
+```php
+$thread->deleteAttributeByValue('red');
 ```
 
 # Laravel Attributes Configuration
@@ -81,104 +189,41 @@ This document describes all configuration options available in the `attributes.p
 ],
 ```
 
-Defines the model class used for tracking views. You can override this with your own model class if needed.
+Defines the model class used to save attributes. You can override this with your own model class if needed.
 
 ```php
 'table_names' => [
-    'attributes' => 'views',
+    'attributes' => 'attributes',
 ],
 ```
-Specifies the database table name used for storing views. Default is 'views'.
+Specifies the database table name used for storing attributes. Default is 'attributes'.
 
-### Bot Detection
-
-```php
-'ignore_bots' => true,
-```
-
-- `true`: Ignores views from bots and crawlers
-- `false`: Records views from all visitors including bots
-- Default: `true`
-
-### Do Not Track (DNT) Header
+### Data Type and Casting
 
 ```php
-'honor_dnt' => false,
-```
-- `true`: Respects the Do Not Track (DNT) header from browsers
-- `false`: Records views regardless of DNT header
-- Default: `false`
-
-### Unique View Settings
-
-```php
-'unique_ip' => true,
-'unique_session' => true,
-'unique_viewer' => true,
-```
-Controls how unique views are tracked:
-
-- `unique_ip`: Records only one view per IP address
-- `unique_session`: Records only one view per session
-- `unique_viewer`: Records only one view per authenticated user
-- Default: All set to `true`
-
-### Model View Counter
-
-```php
-'increment_model_view_count' => false,
-'increment_model_column_name' => 'view_count',
-```
-- `increment_model_view_count`: Enable/disable automatic view count increment on the model
-- `increment_model_column_name`: Specifies the column name for storing view count
-- Default: Counter disabled, column name set to 'view_count'
-
-### IP Address Filtering
-```php
-'ignored_ip_addresses' => [
-    //'127.0.0.1',
+'data_types' => [
+    [
+        'type' => 'string',
+        'cast' => 'string',
+    ],
+    [
+        'type' => 'integer',
+        'cast' => 'integer',
+    ],
+    [
+        'type' => 'boolean',
+        'cast' => 'boolean',
+    ],
+    [
+        'type' => 'date',
+        'cast' => 'date',
+    ],
+    [
+        'type' => 'json',
+        'cast' => 'array',
+    ],
 ],
 ```
-- Array of IP addresses to ignore when recording views
-- Views from these IPs will not be recorded
-- Default: Empty array (no IPs ignored)
-
-## Control configuration on model
-
-You able to control all the configurtion on model, by adding below properties 
-
-```php
-<?php
-namespace BalajiDharma\LaravelForum\Models;
-
-use BalajiDharma\LaravelAttributes\Traits\HasAttributes;
-use Illuminate\Database\Eloquent\Model;
-
-class Thread extends Model
-{
-    use HasAttributes;
-
-    protected $ignore_bots = true;
-
-    protected $honor_dnt = true;
-
-    protected $unique_session = false;
-
-    protected $unique_ip = false;
-
-    protected $unique_viewer = false;
-
-    protected $increment_model_view_count = true;
-
-    protected $increment_model_column_name = 'view_count';
-
-    protected $ignored_ip_addresses = [
-        '127.0.0.1',
-        '0.0.0.0'
-    ]
-
-```
-
 
 ## Demo
 The "[Basic Laravel Admin Penel](https://github.com/balajidharma/basic-laravel-admin-panel)" starter kit come with Laravel Attributes
