@@ -9,6 +9,8 @@ return [
         'attributes' => 'attributes',
     ],
 
+    'validate_value_before_save' => true,
+
     'data_types' => [
         [
             'type' => 'string',

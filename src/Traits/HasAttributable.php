@@ -2,10 +2,8 @@
 
 namespace BalajiDharma\LaravelAttributes\Traits;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Collection;
 
 trait HasAttributable
 {
@@ -78,6 +76,17 @@ trait HasAttributable
     }
 
     /**
+     * Check if attribute has specific data type.
+     */
+    public function hasAttributeDataType(string $dataType): bool
+    {
+        return $this->getAttributeQuery()
+            ->where('data_type', $dataType)
+            ->exists();
+    }
+
+
+    /**
      * Delete all attributes.
      */
     public function deleteAllAttributes(): self
@@ -114,6 +123,16 @@ trait HasAttributable
     {
         return $this->getAttributeQuery()
             ->where('value', $value)
+            ->delete();
+    }
+
+    /**
+     * Delete attribute by value.
+     */
+    public function deleteAttributeByDataType(string $dataType): int
+    {
+        return $this->getAttributeQuery()
+            ->where('data_type', $dataType)
             ->delete();
     }
 
