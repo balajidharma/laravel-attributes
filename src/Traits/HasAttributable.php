@@ -4,6 +4,7 @@ namespace BalajiDharma\LaravelAttributes\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Config;
 
 trait HasAttributable
 {
@@ -13,7 +14,7 @@ trait HasAttributable
     public function attributes(): MorphMany
     {
         return $this->morphMany(
-            config('attributes.models.attributes'),
+            Config::get('attributes.models.attributes'),
             'attributable'
         )->orderBy('weight');
     }

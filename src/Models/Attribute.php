@@ -31,7 +31,7 @@ class Attribute extends Model
 
     public function getTable()
     {
-        return config('attributes.table_names.attributes', parent::getTable());
+        return Config::get('attributes.table_names.attributes', parent::getTable());
     }
 
     public function attributable()
@@ -43,7 +43,7 @@ class Attribute extends Model
     {
         return CastsAttribute::make(
             get: function (mixed $value, array $attributes) {
-                $dataType = collect(Config::get('attributes.data_types'))->firstWhere('type', $attributes['data_type']);
+                $dataType = collect(Config::get('attributes.data_types'))->firstWhere('name', $attributes['data_type']);
                 $this->casts['data'] = $dataType['cast'];
                 return $this->castAttribute('data', $attributes['value']);
             }
@@ -54,7 +54,7 @@ class Attribute extends Model
     {
         if(Config::get('attributes.validate_value_before_save'))
         {
-            $dataType = collect(Config::get('attributes.data_types'))->firstWhere('type', $this->data_type);
+            $dataType = collect(Config::get('attributes.data_types'))->firstWhere('name', $this->data_type);
 
             $validator = Validator::make(['value' => $value], [
                 'value' => $dataType['validation']
