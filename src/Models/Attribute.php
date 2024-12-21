@@ -53,8 +53,10 @@ class Attribute extends Model
     {
         if(Config::get('attributes.validate_value_before_save'))
         {
+            $dataType = collect(Config::get('attributes.data_types'))->firstWhere('type', $this->data_type);
+
             $validator = Validator::make(['value' => $value], [
-                'value' => $this->data_type
+                'value' => $dataType['validation']
             ]);
 
             if ($validator->fails()) {
