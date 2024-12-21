@@ -155,7 +155,7 @@ if ($thread->hasAttributDataType('json')) {
     return 'attribute data type';
 }
 
-return 'no attribute name';
+return 'no attribute data type';
 ```
 
 ### Getting Attribute Casting Values
