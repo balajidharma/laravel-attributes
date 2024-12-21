@@ -1,25 +1,22 @@
 <h1 align="center">Laravel Attributes</h1>
-<h3 align="center">Add custom attribute to you Laravel model.</h3>
+<h3 align="center">A flexible attribute management system for Laravel models.</h3>
 <p align="center">
 <a href="https://packagist.org/packages/balajidharma/laravel-attributes"><img src="https://poser.pugx.org/balajidharma/laravel-attributes/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/balajidharma/laravel-attributes"><img src="https://poser.pugx.org/balajidharma/laravel-attributes/v/stable" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/balajidharma/laravel-attributes"><img src="https://poser.pugx.org/balajidharma/laravel-attributes/license" alt="License"></a>
 </p>
 
-## Credits
-This package builds upon the work done in [milwad-dev/laravel-attributes](https://github.com/milwad-dev/laravel-attributes) and has been modified to suit specific needs. We are grateful to the original author and contributors for their work.
-
-## Features
-- Save attribute with data type
-- Attribute with sort orders
-- Attribute casting
+## Overview
+Laravel Attributes allows you to add custom attributes to your Laravel models with support for different data types, sorting, and automatic casting.
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Save Attrubute](#save-attribute)
-- [Get Attributes]($get-attributes)
+- [Get Attributes](#get-attributes)
+- [Getting Attribute Casting Values](#getting-attribute-casting-values)
 - [Configuration](#configuration-options)
+- [Credits](#credits)
 - [Demo](#demo)
 
 ## Installation
@@ -49,12 +46,12 @@ To associate views with a model, the model must implement the HasAttributes trai
 <?php
 namespace BalajiDharma\LaravelForum\Models;
 
-use BalajiDharma\LaravelAttributes\Traits\HasAttributes;
+use BalajiDharma\LaravelAttributes\Traits\HasAttributable;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
 {
-    use HasAttributes;
+    use HasAttributable;
 	
 ```
 ## Save attribute
@@ -151,6 +148,33 @@ if ($thread->hasAttributName('color')) {
 return 'no attribute name';
 ```
 
+- Check attribute data type is exists
+
+```php
+if ($thread->hasAttributDataType('json')) {
+    return 'attribute data type';
+}
+
+return 'no attribute name';
+```
+
+### Getting Attribute Casting Values
+
+You can get the casting value in data attribute
+
+```php
+// Fetch threads with their related attributes
+$thread = Thread::query()->with('attributes')->get();
+
+// Access attribute data
+foreach ($thread->attributes as $attribute) {
+    echo $attribute->data;
+}
+```
+
+
+## Delete Attributes
+
 - Delete all attributes
 
 ```php
@@ -173,6 +197,12 @@ $thread->deleteAttributeByName('color');
 
 ```php
 $thread->deleteAttributeByValue('red');
+```
+
+- Delete attribute by data type
+
+```php
+$thread->deleteAttributeByDataType('string');
 ```
 
 # Laravel Attributes Configuration
@@ -198,32 +228,32 @@ Defines the model class used to save attributes. You can override this with your
 ```
 Specifies the database table name used for storing attributes. Default is 'attributes'.
 
+### Validation
+
+```php
+
+'validate_value_before_save' => true,
+
+```
+Disable or enable the value validation based on data type. 
+
+
 ### Data Type and Casting
 
 ```php
 'data_types' => [
-    [
-        'type' => 'string',
-        'cast' => 'string',
-    ],
-    [
-        'type' => 'integer',
-        'cast' => 'integer',
-    ],
-    [
-        'type' => 'boolean',
-        'cast' => 'boolean',
-    ],
-    [
-        'type' => 'date',
-        'cast' => 'date',
-    ],
-    [
-        'type' => 'json',
-        'cast' => 'array',
-    ],
+    ['type' => 'string', 'cast' => 'string'],
+    ['type' => 'integer', 'cast' => 'integer'],
+    ['type' => 'boolean', 'cast' => 'boolean'],
+    ['type' => 'date', 'cast' => 'date'],
+    ['type' => 'json', 'cast' => 'array'],
 ],
 ```
+Support all the Eloquent [Attribute Casting](https://laravel.com/docs/eloquent-mutators#attribute-casting)
+
+## Credits
+This package is based on [milwad-dev/laravel-attributes](https://github.com/milwad-dev/laravel-attributes) and has been modified to provide additional functionality.
+
 
 ## Demo
 The "[Basic Laravel Admin Penel](https://github.com/balajidharma/basic-laravel-admin-panel)" starter kit come with Laravel Attributes
