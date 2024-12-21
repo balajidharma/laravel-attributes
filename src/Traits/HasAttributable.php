@@ -15,7 +15,7 @@ trait HasAttributable
         return $this->morphMany(
             config('attributes.models.attributes'),
             'attributable'
-        );
+        )->orderBy('weight');
     }
 
     /**

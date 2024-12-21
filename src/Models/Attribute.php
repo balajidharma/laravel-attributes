@@ -17,6 +17,7 @@ class Attribute extends Model
         'data_type',
         'name',
         'value',
+        'weight',
         'attributable_id',
         'attributable_type'
     ];
