@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 
-
 class Attribute extends Model
 {
     protected $appends = ['data'];
@@ -19,7 +18,7 @@ class Attribute extends Model
         'value',
         'weight',
         'attributable_id',
-        'attributable_type'
+        'attributable_type',
     ];
 
     public function __construct(array $attributes = [])
@@ -45,6 +44,7 @@ class Attribute extends Model
             get: function (mixed $value, array $attributes) {
                 $dataType = collect(Config::get('attributes.data_types'))->firstWhere('name', $attributes['data_type']);
                 $this->casts['data'] = $dataType['cast'];
+
                 return $this->castAttribute('data', $attributes['value']);
             }
         );
@@ -52,12 +52,11 @@ class Attribute extends Model
 
     public function setValueAttribute($value)
     {
-        if(Config::get('attributes.validate_value_before_save'))
-        {
+        if (Config::get('attributes.validate_value_before_save')) {
             $dataType = collect(Config::get('attributes.data_types'))->firstWhere('name', $this->data_type);
 
             $validator = Validator::make(['value' => $value], [
-                'value' => $dataType['validation']
+                'value' => $dataType['validation'],
             ]);
 
             if ($validator->fails()) {

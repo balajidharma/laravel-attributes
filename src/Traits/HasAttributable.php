@@ -23,9 +23,9 @@ trait HasAttributable
      * Attach a single attribute.
      */
     public function attachAttribute(
-        string $name, 
-        string $value, 
-        ?string $data_type = 'string', 
+        string $name,
+        string $value,
+        ?string $data_type = 'string',
         ?int $weight = 0
     ): Model {
         return $this->attributes()->create([
@@ -86,13 +86,13 @@ trait HasAttributable
             ->exists();
     }
 
-
     /**
      * Delete all attributes.
      */
     public function deleteAllAttributes(): self
     {
         $this->getAttributeQuery()->delete();
+
         return $this;
     }
 
