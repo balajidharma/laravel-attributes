@@ -1,8 +1,8 @@
 <?php
 
-namespace Balajidharma\LaravelAttributes\Models;
+namespace BalajiDharma\LaravelAttributes\Models;
 
-use Balajidharma\LaravelAttributes\Exceptions\AttributeValueException;
+use BalajiDharma\LaravelAttributes\Exceptions\AttributeValueException;
 use Illuminate\Database\Eloquent\Casts\Attribute as CastsAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;

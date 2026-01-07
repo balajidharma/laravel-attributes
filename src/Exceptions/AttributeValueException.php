@@ -1,6 +1,6 @@
 <?php
 
-namespace Balajidharma\LaravelAttributes\Exceptions;
+namespace BalajiDharma\LaravelAttributes\Exceptions;
 
 use Exception;
 
