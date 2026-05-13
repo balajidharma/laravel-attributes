@@ -1,6 +1,6 @@
 {
     "name": "balajidharma/laravel-attributes",
-    "description": "Laravel form builder",
+    "description": "A flexible attribute management system for Laravel models",
     "license": "MIT",
     "keywords": ["attributes","laravel","laravel-attributes","laravel-attribute","laravel-framework"],
     "authors": [
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "illuminate/support": "^10.0|^11.0"
+        "illuminate/support": "^10.0|^11.0|^12.0"
     },
     "autoload": {
         "psr-4": {

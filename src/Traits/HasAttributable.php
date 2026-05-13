@@ -2,10 +2,9 @@
 
 namespace BalajiDharma\LaravelAttributes\Traits;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 trait HasAttributable
 {
@@ -15,18 +14,18 @@ trait HasAttributable
     public function attributes(): MorphMany
     {
         return $this->morphMany(
-            config('attributes.models.attributes'),
+            Config::get('attributes.models.attributes'),
             'attributable'
-        );
+        )->orderBy('weight');
     }
 
     /**
      * Attach a single attribute.
      */
     public function attachAttribute(
-        string $name, 
-        string $value, 
-        ?string $data_type = 'string', 
+        string $name,
+        string $value,
+        ?string $data_type = 'string',
         ?int $weight = 0
     ): Model {
         return $this->attributes()->create([
@@ -78,11 +77,22 @@ trait HasAttributable
     }
 
     /**
+     * Check if attribute has specific data type.
+     */
+    public function hasAttributeDataType(string $dataType): bool
+    {
+        return $this->getAttributeQuery()
+            ->where('data_type', $dataType)
+            ->exists();
+    }
+
+    /**
      * Delete all attributes.
      */
     public function deleteAllAttributes(): self
     {
         $this->getAttributeQuery()->delete();
+
         return $this;
     }
 
@@ -114,6 +124,16 @@ trait HasAttributable
     {
         return $this->getAttributeQuery()
             ->where('value', $value)
+            ->delete();
+    }
+
+    /**
+     * Delete attribute by value.
+     */
+    public function deleteAttributeByDataType(string $dataType): int
+    {
+        return $this->getAttributeQuery()
+            ->where('data_type', $dataType)
             ->delete();
     }
 
